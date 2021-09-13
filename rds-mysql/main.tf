@@ -1,22 +1,20 @@
 provider "aws" {
   region = "eu-west-1"
-  version = "2.0.0"
 }
 
-data "aws_vpc" "default" {
-  id = "${var.vpc_id}"
+resource "aws_vpc" "sb_services" {
+  cidr_block = "10.0.0.0/16"
 }
 
-data "aws_subnet_ids" "apps_subnets" {
-  vpc_id = "${var.vpc_id}"
-  tags = {
-    Name = "app-subnet*"
-  }
+resource "aws_subnet" "sb_services" {
+  vpc_id     = aws_vpc.sb_services.id
+  cidr_block = "10.0.0.0/16"
+
 }
 
 resource "aws_db_subnet_group" "rds" {
   name = "rds-${var.sandbox_id}-subnet-group"
-  subnet_ids = ["${data.aws_subnet_ids.apps_subnets.ids}"]
+  subnet_ids = [aws_subnet.sb_services.id]
 
   tags = {
     Name = "RDS-subnet-group"
