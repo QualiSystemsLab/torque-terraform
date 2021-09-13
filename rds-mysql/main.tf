@@ -6,15 +6,23 @@ resource "aws_vpc" "sb_services" {
   cidr_block = "10.0.0.0/16"
 }
 
-resource "aws_subnet" "sb_services" {
+resource "aws_subnet" "a" {
   vpc_id     = aws_vpc.sb_services.id
-  cidr_block = "10.0.0.0/16"
+  cidr_block = "10.0.1.0/24"
+  availability_zone = "eu-west-1a"
+
+}
+
+resource "aws_subnet" "b" {
+  vpc_id     = aws_vpc.sb_services.id
+  cidr_block = "10.0.2.0/24"
+  availability_zone = "eu-west-1b"
 
 }
 
 resource "aws_db_subnet_group" "rds" {
   name = "rds-${var.sandbox_id}-subnet-group"
-  subnet_ids = [aws_subnet.sb_services.id]
+  subnet_ids = [aws_subnet.a.id,aws_subnet.b.id]
 
   tags = {
     Name = "RDS-subnet-group"
