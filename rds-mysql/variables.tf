@@ -14,7 +14,3 @@ variable "sandbox_id" {
   description = "Colony sandbox id"
 }
 
-variable "vpc_id" {
-  description = "Colony sandbox vpc"
-}
-
