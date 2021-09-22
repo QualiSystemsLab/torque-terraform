@@ -1,28 +1,22 @@
 provider "aws" {
   region = "eu-west-1"
+  version = "2.0.0"
 }
 
-resource "aws_vpc" "sb_services" {
-  cidr_block = "10.0.0.0/16"
+data "aws_vpc" "default" {
+  id = "${var.vpc_id}"
 }
 
-resource "aws_subnet" "a" {
-  vpc_id     = aws_vpc.sb_services.id
-  cidr_block = "10.0.1.0/24"
-  availability_zone = "eu-west-1a"
-
-}
-
-resource "aws_subnet" "b" {
-  vpc_id     = aws_vpc.sb_services.id
-  cidr_block = "10.0.2.0/24"
-  availability_zone = "eu-west-1b"
-
+data "aws_subnet_ids" "apps_subnets" {
+  vpc_id = "${var.vpc_id}"
+  tags = {
+    Name = "*"
+  }
 }
 
 resource "aws_db_subnet_group" "rds" {
   name = "rds-${var.sandbox_id}-subnet-group"
-  subnet_ids = [aws_subnet.a.id,aws_subnet.b.id]
+  subnet_ids = ["${data.aws_subnet_ids.apps_subnets.ids}"]
 
   tags = {
     Name = "RDS-subnet-group"

@@ -1,13 +1,13 @@
 resource "aws_security_group" "rds" {
   name        = "rds-${var.sandbox_id}_sg"
   description = "Allow all inbound traffic"
-  vpc_id      = aws_vpc.sb_services.id
+  vpc_id      = "${var.vpc_id}"
 
   ingress {
     from_port   = 3306
     to_port     = 3306
     protocol    = "TCP"
-    cidr_blocks = ["${aws_vpc.sb_services.cidr_block}"]
+    cidr_blocks = ["${data.aws_vpc.default.cidr_block}"]
   }
 
   egress {
