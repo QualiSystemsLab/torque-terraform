@@ -1,29 +1,8 @@
-provider "aws" {
-  region = "eu-west-1"
-  version = "2.0.0"
-}
-
-data "aws_vpc" "default" {
-  id = "${var.vpc_id}"
-}
-
-data "aws_subnet_ids" "apps_subnets" {
-  vpc_id = "${var.vpc_id}"
-  tags = {
-    Name = "*"
-  }
-}
 
 resource "aws_db_subnet_group" "rds" {
   name = "rds-${var.sandbox_id}-subnet-group"
-  subnet_ids = ["${data.aws_subnet_ids.apps_subnets.ids}"]
-
-  tags = {
-    Name = "RDS-subnet-group"
-  }
+  subnet_ids = [aws_subnet.a.id,aws_subnet.b.id]
 }
-
-
 resource "aws_db_instance" "default" {
   allocated_storage    = 20
   storage_type         = "gp2"
@@ -39,4 +18,5 @@ resource "aws_db_instance" "default" {
   vpc_security_group_ids    = ["${aws_security_group.rds.id}"]
   skip_final_snapshot       = true
   final_snapshot_identifier = "Ignore"
+  publicly_accessible = true
 }
